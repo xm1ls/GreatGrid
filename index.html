@@ -17,23 +17,29 @@
             align-items: center;
         }
 
-        canvas {
+        /* #background-canvas, */
+        #canvas {
             cursor: grab;
-            background-color: rgba(123, 115, 0, 0.1);
+            background-color: rgba(124, 124, 124, 0.1);
             border: 1px solid rgba(123, 0, 41, 0.5);
         }
 
-        canvas:active {
+        /* #background-canvas:active, */
+        #canvas:active {
             cursor: grabbing;
+        }
+
+        #background-canvas,
+        #canvas {
+            position: absolute;
         }
     </style>
 </head>
 
 <body>
     <!-- <div style=""> -->
-    <canvas id="canvas">
-        <canvas id="background-canvas"></canvas>
-    </canvas>
+    <canvas id="background-canvas"></canvas>
+    <canvas id="canvas"></canvas>
     <!-- <canvas id="second-canvas" width="320" height="320"></canvas> -->
     <!-- <canvas id="third-canvas" width="320" height="320"></canvas> -->
     <!-- </div> -->
@@ -97,8 +103,15 @@
             return copy.canvas;
         }
 
-        const canvas = document.getElementById("canvas")
-        const ctx = canvas.getContext("2d", { willReadFrequently: true })
+        const canvas = document.getElementById("canvas");
+        const bgCanvas = document.getElementById("background-canvas");
+
+        const ctx = canvas.getContext("2d",
+            {
+                willReadFrequently: true
+            }
+        );
+        const bgCtx = bgCanvas.getContext("2d");
 
         const getCanvasOffset = (canvas) => canvas.getBoundingClientRect()
 
@@ -112,18 +125,44 @@
         let img = new Image();
         img.src = "res/inventory.png"
 
-        let panningX = 0;
-            panningY = 0;
+        let panningX = panningY = 0;
+
+        const drawGrid = (context, gridWidth, gridHeight, gridCells) => {
+            const gridCellSize = gridWidth / gridCells;
+
+            context.strokeStyle = "rgba(123, 115, 69, 0.3)";
+
+            for (let x = panningX % gridCellSize; x <= gridWidth; x += gridCellSize) {
+                context.beginPath();
+                context.moveTo(x, 0);
+                context.lineTo(x, gridHeight);
+
+                context.imageSmoothingEnabled = false;
+                context.stroke();
+            }
+
+            for (let y = panningY % gridCellSize; y <= gridHeight; y += gridCellSize) {
+                context.beginPath();
+                context.moveTo(0, y);
+                context.lineTo(gridWidth, y);
+
+                context.imageSmoothingEnabled = false;
+                context.stroke();
+            }
+        }
 
         img.onload = () => {
-            canvas.width = img.width * 2;
-            canvas.height = img.height * 2;
+            canvas.width = bgCanvas.width = img.width * 2;
+            canvas.height = bgCanvas.height = img.height * 2;
 
-            panningX = canvas.width/3;
-            panningY = canvas.height/3;
+            panningX = canvas.width / 3;
+            panningY = canvas.height / 3;
 
             ctx.imageSmoothingEnabled = false;
-            ctx.drawImage(img, panningX, panningY);
+            // ctx.drawImage(img, panningX, panningY);
+
+            drawGrid(bgCtx, canvas.width, canvas.height, 8);
+            // drawGrid(ctx, canvas.width, canvas.height, 8);
         }
 
         let canvasOffset = getCanvasOffset(canvas);
@@ -136,34 +175,44 @@
             // e.stopPropagation();
 
             isMouseDown = true;
-            ({ x: startX, y: startY } = getCanvasPosition(e, canvasOffset));
+            ({ x: startX, y: startY } = getCanvasPosition(e, getCanvasOffset(canvas)));
         })
 
-        
+
 
         canvas.addEventListener('mousemove', (e) => {
             // e.preventDefault();
             // e.stopPropagation();
 
             if (isMouseDown) {
-                const { x, y } = getCanvasPosition(e, canvasOffset);
+                panning(e, bgCanvas, bgCtx, () =>
+                    drawGrid(bgCtx, canvas.width, canvas.height, 8)
+                );
 
-                panningX += x - startX;
-                panningY += y - startY;
-
-                startX = x;
-                startY = y;
-
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                ctx.save();
-                ctx.translate(panningX, panningY);
-                ctx.restore();
-                
-                ctx.drawImage(img, panningX, panningY);
+                // panning(e, canvas, ctx, () =>
+                //     ctx.drawImage(img, panningX, panningY)
+                // );
 
             } else return
         })
+
+        const panning = (event, canvas, context, whatToDraw) => {
+            const { x, y } = getCanvasPosition(event, getCanvasOffset(canvas));
+
+            panningX += x - startX;
+            panningY += y - startY;
+
+            startX = x;
+            startY = y;
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            context.save();
+            context.translate(panningX, panningY);
+            context.restore();
+
+            whatToDraw();
+        }
 
         window.addEventListener('mouseup', (e) => {
             // e.preventDefault();
