@@ -99,9 +99,9 @@
 
         const canvas = document.getElementById("canvas")
         const ctx = canvas.getContext("2d", { willReadFrequently: true })
-        
+
         const getCanvasOffset = (canvas) => canvas.getBoundingClientRect()
-        
+
         const getCanvasPosition = (event, canvasOffset) => {
             return {
                 x: Math.ceil(event.clientX - canvasOffset.left),
@@ -112,12 +112,18 @@
         let img = new Image();
         img.src = "res/inventory.png"
 
-        canvas.width = img.width * 2;
-        canvas.height = img.height * 2;
+        let panningX = 0;
+            panningY = 0;
 
         img.onload = () => {
+            canvas.width = img.width * 2;
+            canvas.height = img.height * 2;
+
+            panningX = canvas.width/3;
+            panningY = canvas.height/3;
+
             ctx.imageSmoothingEnabled = false;
-            ctx.drawImage(img, 0, 0);
+            ctx.drawImage(img, panningX, panningY);
         }
 
         let canvasOffset = getCanvasOffset(canvas);
@@ -133,8 +139,7 @@
             ({ x: startX, y: startY } = getCanvasPosition(e, canvasOffset));
         })
 
-        let panningX = 0;
-        let panningY = 0; 
+        
 
         canvas.addEventListener('mousemove', (e) => {
             // e.preventDefault();
@@ -148,13 +153,13 @@
 
                 startX = x;
                 startY = y;
-                
+
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 ctx.save();
                 ctx.translate(panningX, panningY);
                 ctx.restore();
-
+                
                 ctx.drawImage(img, panningX, panningY);
 
             } else return
@@ -172,7 +177,7 @@
             // e.preventDefault();
             // e.stopPropagation();
 
-            if(isMouseDown)
+            if (isMouseDown)
                 isMouseDown = true;
         })
 
