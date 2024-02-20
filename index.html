@@ -20,8 +20,8 @@
         /* #background-canvas, */
         #canvas {
             cursor: grab;
-            background-color: rgba(124, 124, 124, 0.1);
-            border: 1px solid rgba(123, 0, 41, 0.5);
+            background-color: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgb(0, 0, 0);
         }
 
         /* #background-canvas:active, */
@@ -37,12 +37,8 @@
 </head>
 
 <body>
-    <!-- <div style=""> -->
     <canvas id="background-canvas"></canvas>
     <canvas id="canvas"></canvas>
-    <!-- <canvas id="second-canvas" width="320" height="320"></canvas> -->
-    <!-- <canvas id="third-canvas" width="320" height="320"></canvas> -->
-    <!-- </div> -->
 
     <script>
         function trimCanvas(c) {
@@ -123,46 +119,46 @@
         }
 
         let img = new Image();
+        // img.src = "res/inventory_black.png"
         img.src = "res/inventory.png"
 
         let panningX = panningY = 0;
+        let scale = 2;
 
         const drawGrid = (context, gridWidth, gridHeight, gridCells) => {
             const gridCellSize = gridWidth / gridCells;
 
-            context.strokeStyle = "rgba(123, 115, 69, 0.3)";
+            context.strokeStyle = "rgba(0, 0, 0, .1)";
 
             for (let x = panningX % gridCellSize; x <= gridWidth; x += gridCellSize) {
                 context.beginPath();
                 context.moveTo(x, 0);
                 context.lineTo(x, gridHeight);
-
-                context.imageSmoothingEnabled = false;
                 context.stroke();
             }
 
             for (let y = panningY % gridCellSize; y <= gridHeight; y += gridCellSize) {
-                context.beginPath();
+                context.beginPath()
                 context.moveTo(0, y);
                 context.lineTo(gridWidth, y);
-
-                context.imageSmoothingEnabled = false;
                 context.stroke();
             }
         }
 
         img.onload = () => {
-            canvas.width = bgCanvas.width = img.width * 2;
-            canvas.height = bgCanvas.height = img.height * 2;
+            canvas.width = bgCanvas.width = 700;
+            canvas.height = bgCanvas.height = 700;
 
-            panningX = canvas.width / 3;
-            panningY = canvas.height / 3;
+            panningX = canvas.width / 4;
+            panningY = canvas.height / 4;
 
             ctx.imageSmoothingEnabled = false;
-            // ctx.drawImage(img, panningX, panningY);
+            ctx.save();
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, panningX / scale, panningY / scale);
+            ctx.restore();
 
             drawGrid(bgCtx, canvas.width, canvas.height, 8);
-            // drawGrid(ctx, canvas.width, canvas.height, 8);
         }
 
         let canvasOffset = getCanvasOffset(canvas);
@@ -190,8 +186,9 @@
                 );
 
                 // panning(e, canvas, ctx, () =>
-                //     ctx.drawImage(img, panningX, panningY)
+                //     ctx.drawImage(img, panningX / 2, panningY / 2)
                 // );
+                // redraw(e, scale);
 
             } else return
         })
@@ -228,6 +225,21 @@
 
             if (isMouseDown)
                 isMouseDown = true;
+        })
+
+        canvas.addEventListener('wheel', (e) => {
+            scale += event.deltaY * -0.01;
+
+            scale = Math.min(Math.max(2, scale), 4);
+
+            const { x, y } = getCanvasPosition(e, getCanvasOffset(canvas));
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save()
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, (canvas.width / 4) / scale, (canvas.height / 4) / scale);
+            ctx.restore()
         })
 
         window.onresize = (e) => {
