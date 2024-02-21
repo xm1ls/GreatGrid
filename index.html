@@ -31,6 +31,8 @@
 
         #background-canvas,
         #canvas {
+            /* width: 700px; */
+            /* height: 700px; */
             position: absolute;
         }
     </style>
@@ -119,25 +121,26 @@
         }
 
         let img = new Image();
-        // img.src = "res/inventory_black.png"
-        img.src = "res/inventory.png"
+        img.src = "res/inventory_black.png"
+        // img.src = "res/inventory.png"
 
         let panningX = panningY = 0;
-        let scale = 2;
+        let zoomOffsetX = zoomOffsetY = 0;
+        let scale = 1;
 
         const drawGrid = (context, gridWidth, gridHeight, gridCells) => {
             const gridCellSize = gridWidth / gridCells;
 
             context.strokeStyle = "rgba(0, 0, 0, .1)";
 
-            for (let x = panningX % gridCellSize; x <= gridWidth; x += gridCellSize) {
+            for (let x = Math.ceil(panningX % gridCellSize); x <= gridWidth; x += gridCellSize) {
                 context.beginPath();
                 context.moveTo(x, 0);
                 context.lineTo(x, gridHeight);
                 context.stroke();
             }
 
-            for (let y = panningY % gridCellSize; y <= gridHeight; y += gridCellSize) {
+            for (let y = Math.ceil(panningY % gridCellSize); y <= gridHeight; y += gridCellSize) {
                 context.beginPath()
                 context.moveTo(0, y);
                 context.lineTo(gridWidth, y);
@@ -147,10 +150,15 @@
 
         img.onload = () => {
             canvas.width = bgCanvas.width = 700;
-            canvas.height = bgCanvas.height = 700;
+            canvas.height = bgCanvas.height = 700; 
 
-            panningX = canvas.width / 4;
-            panningY = canvas.height / 4;
+            panningX = Math.ceil(canvas.width / 3);
+            panningY = Math.ceil(canvas.height / 3);
+
+            // panningX = 0;
+            // panningY = 0;
+
+            zoomOffsetX = panningX;
 
             ctx.imageSmoothingEnabled = false;
             ctx.save();
@@ -158,7 +166,7 @@
             ctx.drawImage(img, panningX / scale, panningY / scale);
             ctx.restore();
 
-            drawGrid(bgCtx, canvas.width, canvas.height, 8);
+            drawGrid(bgCtx, canvas.width, canvas.height, 16);
         }
 
         let canvasOffset = getCanvasOffset(canvas);
@@ -181,15 +189,21 @@
             // e.stopPropagation();
 
             if (isMouseDown) {
-                panning(e, bgCanvas, bgCtx, () =>
-                    drawGrid(bgCtx, canvas.width, canvas.height, 8)
-                );
+                panning(e, bgCanvas, bgCtx, () => {
+                    // bgCtx.save()
+                    // bgCtx.scale(scale, scale);
+                    drawGrid(bgCtx, canvas.width, canvas.height, 16)
+                    // bgCtx.restore()
+                });
 
-                // panning(e, canvas, ctx, () =>
-                //     ctx.drawImage(img, panningX / 2, panningY / 2)
-                // );
+                panning(e, canvas, ctx, () => {
+                    ctx.save()
+                    ctx.scale(scale, scale);
+                    ctx.drawImage(img, panningX / scale, panningY / scale);
+                    ctx.restore()
+                });
+
                 // redraw(e, scale);
-
             } else return
         })
 
@@ -199,16 +213,20 @@
             panningX += x - startX;
             panningY += y - startY;
 
+            console.log('panningX :>> ', panningX);
+
             startX = x;
             startY = y;
 
             context.clearRect(0, 0, canvas.width, canvas.height);
 
-            context.save();
-            context.translate(panningX, panningY);
-            context.restore();
-
+            // context.save();
+            // context.scale(scale, scale);
+            // context.translate(Math.ceil(x / scale), Math.ceil(y / scale));
+            // context.restore();
             whatToDraw();
+
+            // context.scale(scale, scale);
         }
 
         window.addEventListener('mouseup', (e) => {
@@ -228,17 +246,35 @@
         })
 
         canvas.addEventListener('wheel', (e) => {
-            scale += event.deltaY * -0.01;
+            const prevScale = scale;
 
-            scale = Math.min(Math.max(2, scale), 4);
+            scale += event.deltaY * -0.01;
+            scale = Math.min(Math.max(1, scale), 4);
+
+            if (prevScale == scale) return;
 
             const { x, y } = getCanvasPosition(e, getCanvasOffset(canvas));
+
+            const onImageX = (x - panningX) * -1;
+            const onImageY = (y - panningY) * -1;
+
+            // console.log('brf :>> ', panningX);
+
+            // panningX += onImageX;
+            // panningY += onImageY;
+
+            // console.log('aftr :>> ', panningX);
+
+            // zoomOffsetX = Math.ceil(x / scale);
+            // zoomOffsetY = Math.ceil(y / scale);
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             ctx.save()
             ctx.scale(scale, scale);
-            ctx.drawImage(img, (canvas.width / 4) / scale, (canvas.height / 4) / scale);
+            ctx.translate(Math.ceil(x / scale), Math.ceil(y / scale));
+            ctx.drawImage(img, onImageX, onImageY);
+
             ctx.restore()
         })
 
