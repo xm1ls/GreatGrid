@@ -17,22 +17,18 @@
             align-items: center;
         }
 
-        /* #background-canvas, */
         #canvas {
             cursor: grab;
             background-color: rgba(0, 0, 0, 0.05);
             border: 1px solid rgb(0, 0, 0);
         }
 
-        /* #background-canvas:active, */
         #canvas:active {
             cursor: grabbing;
         }
 
         #background-canvas,
         #canvas {
-            /* width: 700px; */
-            /* height: 700px; */
             position: absolute;
         }
     </style>
@@ -43,90 +39,132 @@
     <canvas id="canvas"></canvas>
 
     <script>
-        function trimCanvas(c) {
-            var ctx = c.getContext('2d'),
-                copy = document.createElement('canvas').getContext('2d'),
-                pixels = ctx.getImageData(0, 0, c.width, c.height),
-                l = pixels.data.length,
-                i,
-                bound = {
-                    top: null,
-                    left: null,
-                    right: null,
-                    bottom: null
-                },
-                x, y;
-
-            // Iterate over every pixel to find the highest
-            // and where it ends on every axis ()
-            for (i = 0; i < l; i += 4) {
-                if (pixels.data[i + 3] !== 0) {
-                    x = (i / 4) % c.width;
-                    y = ~~((i / 4) / c.width);
-
-                    if (bound.top === null) {
-                        bound.top = y;
-                    }
-
-                    if (bound.left === null) {
-                        bound.left = x;
-                    } else if (x < bound.left) {
-                        bound.left = x;
-                    }
-
-                    if (bound.right === null) {
-                        bound.right = x;
-                    } else if (bound.right < x) {
-                        bound.right = x;
-                    }
-
-                    if (bound.bottom === null) {
-                        bound.bottom = y;
-                    } else if (bound.bottom < y) {
-                        bound.bottom = y;
-                    }
-                }
-            }
-
-            // Calculate the height and width of the content
-            var trimHeight = bound.bottom - bound.top,
-                trimWidth = bound.right - bound.left,
-                trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
-
-            copy.canvas.width = trimWidth;
-            copy.canvas.height = trimHeight;
-            copy.putImageData(trimmed, 0, 0);
-
-            // Return trimmed canvas
-            return copy.canvas;
-        }
-
         const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
         const bgCanvas = document.getElementById("background-canvas");
-
-        const ctx = canvas.getContext("2d",
-            {
-                willReadFrequently: true
-            }
-        );
         const bgCtx = bgCanvas.getContext("2d");
-
-        const getCanvasOffset = (canvas) => canvas.getBoundingClientRect()
-
-        const getCanvasPosition = (event, canvasOffset) => {
-            return {
-                x: Math.ceil(event.clientX - canvasOffset.left),
-                y: Math.ceil(event.clientY - canvasOffset.top)
-            }
-        }
 
         let img = new Image();
         img.src = "res/inventory_black.png"
         // img.src = "res/inventory.png"
 
-        let panningX = panningY = 0;
-        let zoomOffsetX = zoomOffsetY = 0;
-        let scale = 1;
+        let startX, startY,
+            panningX, panningY,
+            isMouseDown = false,
+            scale = 1;
+
+        img.onload = () => {
+            canvas.width = bgCanvas.width = 600;
+            canvas.height = bgCanvas.height = 600;
+
+            panningX = Math.ceil(canvas.width / 4);
+            panningY = Math.ceil(canvas.height / 4);
+
+            // panningX = 0;
+            // panningY = 0;
+
+            ctx.imageSmoothingEnabled = false;
+            ctx.save();
+
+            ctx.translate(panningX, panningY);
+
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, 0, 0);
+
+            ctx.restore();
+
+            drawGrid(bgCtx, canvas.width, canvas.height, 4);
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            ({ x: startX, y: startY } = getCanvasPosition(e, canvas));
+            isMouseDown = true;
+        })
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isMouseDown) return;
+
+            // panning(e, bgCanvas, bgCtx, () => {
+            //     // bgCtx.save()
+            //     // bgCtx.scale(scale, scale);
+            //     // bgCtx.restore()
+            //     drawGrid(bgCtx, canvas.width, canvas.height, 16)
+            // });
+
+            panning(e, canvas, ctx, () => {
+                ctx.save()
+                ctx.scale(scale, scale);
+                ctx.drawImage(img, panningX / scale, panningY / scale);
+                ctx.restore()
+            });
+        })
+
+        canvas.addEventListener('wheel', (e) => {
+            zoom(e);
+        })
+
+        canvas.addEventListener('mouseout', (e) => {
+            if (isMouseDown)
+                isMouseDown = true;
+        })
+
+        window.addEventListener('mouseup', (e) => {
+            isMouseDown = false;
+        })
+
+        const zoom = (e) => {
+            const prevScale = scale;
+
+            scale += event.deltaY * -0.01;
+            scale = Math.min(Math.max(1, scale), 16);
+
+            if (prevScale == scale) return;
+
+            const { x, y } = getCanvasPosition(e, canvas);
+
+            const onImageX = Math.ceil((x - panningX) / prevScale);
+            const onImageY = Math.ceil((y - panningY) / prevScale);
+
+            if (prevScale < scale) {
+                panningX -= onImageX
+                panningY -= onImageY
+            } else {
+                panningX += onImageX
+                panningY += onImageY
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save()
+
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, -onImageX, -onImageY);
+
+            ctx.restore()
+        }
+
+        const panning = (event, canvas, context, whatToDraw) => {
+            const { x, y } = getCanvasPosition(event, canvas);
+
+            panningX += x - startX;
+            panningY += y - startY;
+
+            startX = x;
+            startY = y;
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            whatToDraw();
+        }
+
+        const getCanvasPosition = (event, canvas) => {
+            const canvasOffset = canvas.getBoundingClientRect()
+
+            return {
+                x: Math.ceil(event.clientX - canvasOffset.left),
+                y: Math.ceil(event.clientY - canvasOffset.top)
+            }
+        }
 
         const drawGrid = (context, gridWidth, gridHeight, gridCells) => {
             const gridCellSize = gridWidth / gridCells;
@@ -147,145 +185,6 @@
                 context.stroke();
             }
         }
-
-        img.onload = () => {
-            canvas.width = bgCanvas.width = 700;
-            canvas.height = bgCanvas.height = 700; 
-
-            panningX = Math.ceil(canvas.width / 3);
-            panningY = Math.ceil(canvas.height / 3);
-
-            // panningX = 0;
-            // panningY = 0;
-
-            zoomOffsetX = panningX;
-
-            ctx.imageSmoothingEnabled = false;
-            ctx.save();
-            ctx.scale(scale, scale);
-            ctx.drawImage(img, panningX / scale, panningY / scale);
-            ctx.restore();
-
-            drawGrid(bgCtx, canvas.width, canvas.height, 16);
-        }
-
-        let canvasOffset = getCanvasOffset(canvas);
-
-        let isMouseDown = false;
-        let startX, startY;
-
-        canvas.addEventListener('mousedown', (e) => {
-            // e.preventDefault();
-            // e.stopPropagation();
-
-            isMouseDown = true;
-            ({ x: startX, y: startY } = getCanvasPosition(e, getCanvasOffset(canvas)));
-        })
-
-
-
-        canvas.addEventListener('mousemove', (e) => {
-            // e.preventDefault();
-            // e.stopPropagation();
-
-            if (isMouseDown) {
-                panning(e, bgCanvas, bgCtx, () => {
-                    // bgCtx.save()
-                    // bgCtx.scale(scale, scale);
-                    drawGrid(bgCtx, canvas.width, canvas.height, 16)
-                    // bgCtx.restore()
-                });
-
-                panning(e, canvas, ctx, () => {
-                    ctx.save()
-                    ctx.scale(scale, scale);
-                    ctx.drawImage(img, panningX / scale, panningY / scale);
-                    ctx.restore()
-                });
-
-                // redraw(e, scale);
-            } else return
-        })
-
-        const panning = (event, canvas, context, whatToDraw) => {
-            const { x, y } = getCanvasPosition(event, getCanvasOffset(canvas));
-
-            panningX += x - startX;
-            panningY += y - startY;
-
-            console.log('panningX :>> ', panningX);
-
-            startX = x;
-            startY = y;
-
-            context.clearRect(0, 0, canvas.width, canvas.height);
-
-            // context.save();
-            // context.scale(scale, scale);
-            // context.translate(Math.ceil(x / scale), Math.ceil(y / scale));
-            // context.restore();
-            whatToDraw();
-
-            // context.scale(scale, scale);
-        }
-
-        window.addEventListener('mouseup', (e) => {
-            // e.preventDefault();
-            // e.stopPropagation();
-
-            isMouseDown = false;
-        })
-
-
-        canvas.addEventListener('mouseout', (e) => {
-            // e.preventDefault();
-            // e.stopPropagation();
-
-            if (isMouseDown)
-                isMouseDown = true;
-        })
-
-        canvas.addEventListener('wheel', (e) => {
-            const prevScale = scale;
-
-            scale += event.deltaY * -0.01;
-            scale = Math.min(Math.max(1, scale), 4);
-
-            if (prevScale == scale) return;
-
-            const { x, y } = getCanvasPosition(e, getCanvasOffset(canvas));
-
-            const onImageX = (x - panningX) * -1;
-            const onImageY = (y - panningY) * -1;
-
-            // console.log('brf :>> ', panningX);
-
-            // panningX += onImageX;
-            // panningY += onImageY;
-
-            // console.log('aftr :>> ', panningX);
-
-            // zoomOffsetX = Math.ceil(x / scale);
-            // zoomOffsetY = Math.ceil(y / scale);
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            ctx.save()
-            ctx.scale(scale, scale);
-            ctx.translate(Math.ceil(x / scale), Math.ceil(y / scale));
-            ctx.drawImage(img, onImageX, onImageY);
-
-            ctx.restore()
-        })
-
-        window.onresize = (e) => {
-            getCanvasOffset(canvas);
-        }
-
-        window.onscroll = (e) => {
-            getCanvasOffset(canvas);
-        }
-
     </script>
 </body>
 
