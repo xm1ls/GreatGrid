@@ -1,27 +1,40 @@
 const object = document.getElementById("object");
+const scaleText = document.getElementById("scale");
+const fpsText = document.getElementById("fps");
 
-let timer,
-    scrollDelay = 100,
-    scale = prevScale = startScale = 1;
+let timer, prevTimeStamp, fps,
+    scrollDelay = 100, zoomTime = .25,
+    scale = prevScale = 1;
 
 window.addEventListener("wheel", e => {
     clearTimeout(timer)
 
-    prevScale = scale;
-
     scale += e.deltaY * -0.01;
     scale = Math.max(1, scale);
 
+    scaleText.textContent = `${scale}`;
+
     timer = setTimeout(() => {
-        const zoomValues = interpolate(startScale, scale, { firstPoint: 1.35, secondPoint: 1, steps: 15 })
+        if (prevScale == scale) return;
+
+        const zoomValues = interpolate({
+            startValue: prevScale,
+            endValue: scale,
+            firstPoint: 1.35,
+            secondPoint: 1,
+            fps: fps,
+            time: zoomTime
+        })
 
         requestAnimationFrame(t => zoom(zoomValues))
     }, scrollDelay)
 
 })
 
-function interpolate(startValue, endValue, { firstPoint = 0, secondPoint = 1, steps = 60 }) {
+function interpolate({ startValue, endValue, firstPoint = 0, secondPoint = 1, fps = 60, time = 1 }) {
     let interpolationValues = [];
+
+    const steps = fps * time;
 
     for (let i = 0; i <= steps; i++) {
         const t = i / steps;
@@ -39,7 +52,19 @@ function zoom(zoomValues, index = 0) {
     if (index >= zoomValues.length) return;
 
     object.style.transform = `scale(${zoomValues[index]})`
-    startScale = zoomValues[index]
+    prevScale = zoomValues[index]
 
     requestAnimationFrame(t => zoom(zoomValues, ++index))
 }
+
+
+function getFPS(timeStamp) {
+    fps = Math.round(1 / ((timeStamp - prevTimeStamp) / 1000));
+    prevTimeStamp = timeStamp;
+
+    fpsText.textContent = `${fps}`
+
+    requestAnimationFrame(getFPS);
+}
+
+requestAnimationFrame(getFPS)
