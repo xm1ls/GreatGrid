@@ -4,13 +4,14 @@ const fpsText = document.getElementById("fps");
 
 let timer, prevTimeStamp, fps,
     scrollDelay = 100, zoomTime = .25,
-    scale = prevScale = 1;
+    scale = prevScale = 1,
+    minScale = 1, maxScale = 14;
 
 window.addEventListener("wheel", e => {
     clearTimeout(timer)
 
     scale += e.deltaY * -0.01;
-    scale = Math.max(1, scale);
+    scale = Math.min(Math.max(minScale, scale), maxScale);
 
     scaleText.textContent = `${scale}`;
 
@@ -63,7 +64,6 @@ function getFPS(timeStamp) {
     prevTimeStamp = timeStamp;
 
     fpsText.textContent = `${fps}`
-
     requestAnimationFrame(getFPS);
 }
 
