@@ -85,19 +85,17 @@
         }
 
         #canvasWrapper {
-            /* position: relative; */
             background-color: #fff;
             width: 65%;
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            /* overflow: hidden; */
         }
 
         #getImageDataCanvas {
+            z-index: 1;
             image-rendering: pixelated;
-            /* background-color: #fff; */
             cursor: none;
             position: absolute;
         }
@@ -112,23 +110,20 @@
         #pointer {
             cursor: none;
             pointer-events: none;
-            /* width: 10px; */
-            /* height: 10px; */
             background-color: black;
             position: absolute;
         }
 
         #innerPointer {
-            /* cursor: crosshair; */
             pointer-events: none;
             width: 10px;
             height: 10px;
             border: 2px solid white;
-            mix-blend-mode:difference;
+            mix-blend-mode: difference;
             border-radius: 40%;
             transform: translateX(-50%) translateY(-50%);
             position: absolute;
-            z-index: 1;
+            z-index: 2;
         }
 
         #fade {
@@ -139,27 +134,129 @@
         }
 
         #glassmorphism {
-            /* pointer-events: none; */
             position: absolute;
+            z-index: 1;
             top: 20px;
             right: 20px;
-            /* bottom: 20px; */
             width: 45px;
             height: 45px;
-            /* display: flex; */
-            /* justify-content: center; */
-            /* align-items: center; */
-            /* z-index: 1; */
-            background: rgba(255, 255, 255, 0);
+            background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.3);
+            /* border: 1px solid rgba(0, 0, 0, 0.3); */
             border-radius: 10px;
         }
 
         #pixelHoverCanvas {
-            /* pointer-events: none; */
             position: absolute;
             background-color: transparent;
+        }
+
+        #info {
+            /* display: flex; */
+            /* flex-direction: column; */
+            /* justify-content: center; */
+            /* align-items: center; */
+            position: absolute;
+            z-index: 1;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            /* border: 1px solid rgba(0, 0, 0, 0.3); */
+            border-radius: 10px;
+            /* transform: translateX(-50%); */
+            padding: 10px 30px;
+            margin: 0;
+            font-family: monospace;
+        }
+
+        #info li {
+            display: flex;
+        }
+
+        #info li div {
+            margin-left: 10px;
+        }
+
+        #canvasBackground {
+            scale: 1;
+            width: 242px;
+            height: 242px;
+            border-radius: 50%;
+            filter: blur(50px);
+            /* border: 1px solid black; */
+        }
+
+        #circle1 {
+            background-color: rgb(255, 0, 0);
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            animation: circle1 30s linear infinite;
+        }
+
+        #circle2 {
+            background-color: rgb(0, 255, 0);
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            animation: circle2 30s linear infinite;
+        }
+
+        #circle3 {
+            background-color: rgb(0, 0, 255);
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            animation: circle3 30s linear infinite;
+        }
+
+        @keyframes circle3 {
+            0% {
+                transform: rotate(120deg)translate(-61px)rotate(120deg);
+            }
+
+            100% {
+                transform: rotate(480deg)translate(-61px)rotate(-480deg);
+            }
+        }
+
+        @keyframes circle2 {
+            0% {
+                transform: rotate(0deg)translate(-61px)rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg)translate(-61px)rotate(-360deg);
+            }
+        }
+
+        @keyframes circle1 {
+            0% {
+                transform: rotate(240deg)translate(-61px)rotate(240deg);
+            }
+
+            100% {
+                transform: rotate(600deg)translate(-61px)rotate(-600deg);
+            }
         }
     </style>
 
@@ -182,6 +279,11 @@
 
     <div id="canvasWrapper">
         <canvas id="getImageDataCanvas"></canvas>
+        <!-- <div id="canvasBackground">
+            <div id="circle1"></div>
+            <div id="circle2"></div>
+            <div id="circle3"></div>
+        </div> -->
         <!-- <canvas id="pixelHoverCanvas"></canvas> -->
         <!-- <div id="pointer"></div> -->
         <div id="innerPointer"></div>
@@ -189,6 +291,12 @@
         <!-- <div id="fade"></div> -->
     </div>
     <div id="glassmorphism"></div>
+    <ul id="info">
+        <li>zoom: <div id="scale">1</div>
+        </li>
+        <li>fps: <div id="fps">60</div>
+        </li>
+    </ul>
 
     <audio id="audio" src="res/deepslate.mp3"></audio>
     <!-- <script src="js/canvas.js"></script> -->

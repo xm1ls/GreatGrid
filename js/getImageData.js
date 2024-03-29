@@ -2,8 +2,12 @@ const canvasWrapper = document.getElementById("canvasWrapper")
 const canvas = document.getElementById("getImageDataCanvas");
 const ctx = canvas.getContext("2d", { willReadFrequently: true, alpha: false });
 
+const scaleText = document.getElementById("scale");
+const fpsText = document.getElementById("fps");
+
 const innerPointer = document.getElementById("innerPointer");
 const audio = document.getElementById("audio");
+
 audio.volume = .1
 
 const img = new Image();
@@ -47,6 +51,8 @@ canvasWrapper.addEventListener("mousedown", e => {
         isPanning = true;
     }
     if(e.button === mouseButton.backward && scale !== minScale) {
+        scaleText.textContent = `${minScale}`
+
         const zoomValues = interpolate({
             startValue: scale,
             endValue: minScale,
@@ -59,6 +65,8 @@ canvasWrapper.addEventListener("mousedown", e => {
         requestAnimationFrame(t => zoom(zoomValues))
     }
     if(e.button === mouseButton.forward && scale !== maxScale) {
+        scaleText.textContent = `${maxScale}`
+
         const zoomValues = interpolate({
             startValue: scale,
             endValue: maxScale,
@@ -156,7 +164,9 @@ canvasWrapper.addEventListener("wheel", e => {
     isZooming = true;
 
     scale += e.deltaY * -0.01;
-    scale = Math.min(Math.max(minScale, scale), maxScale);
+    scale = Math.round(Math.min(Math.max(minScale, scale), maxScale));
+
+    scaleText.textContent = `${scale}`
 
     timer = setTimeout(() => {
         if (prevScale == scale) return;
@@ -247,12 +257,15 @@ function zoom(zoomValues, index = 0) {
         translateX(${panningX}px) 
         translateY(${panningY}px)
     `
+
     requestAnimationFrame(t => zoom(zoomValues, ++index))
 }
 
 function getFPS(timeStamp) {
     fps = Math.round(1 / ((timeStamp - prevTimeStamp) / 1000));
     prevTimeStamp = timeStamp;
+
+    fpsText.textContent = `${fps}`
 
     requestAnimationFrame(getFPS);
 }
