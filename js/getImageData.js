@@ -7,7 +7,7 @@ const audio = document.getElementById("audio");
 audio.volume = .1
 
 const img = new Image();
-img.src = "/res/inventory_transparent.png"
+img.src = "res/inventory_transparent.png"
 
 let startX, startY,
     panningX = panningY = 0,
