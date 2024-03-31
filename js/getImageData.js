@@ -6,6 +6,9 @@ const scaleText = document.getElementById("scale");
 const fpsText = document.getElementById("fps");
 
 const innerPointer = document.getElementById("innerPointer");
+const eyeDropper = document.getElementById("eyeDropper");
+const eyeDropperColor = document.getElementById("color");
+
 const audio = document.getElementById("audio");
 
 audio.volume = .1
@@ -15,13 +18,14 @@ img.src = "res/inventory_transparent.png"
 
 let startX, startY,
     panningX = panningY = 0,
-    isPanning = isZooming = false,
+    isPanning = isZooming = isColorPicking = false,
     centerBorderX, centerBorderY,
     timer, prevTimeStamp, fps,
     scrollDelay = 100, zoomTime = .25,
     scale = prevScale = 1,
     minScale = 1, maxScale = 64,
-    drawColor = "black";
+    drawColor = "black",
+    prevPointOnCanvas = pointOnCanvas = pointColor = null;
 
 const mouseButton = {
     'left': 0,
@@ -44,13 +48,26 @@ img.onload = () => {
 }
 
 canvasWrapper.addEventListener("mousedown", e => {
+    if (e.button === mouseButton.right) {
+        if (isColorPicking) {
+            isColorPicking = false;
+
+            eyeDropper.style.display = 'none';
+        } else {
+            isColorPicking = true;
+
+            eyeDropper.style.display = 'flex';
+            eyeDropper.style.left = e.clientX - 26 + "px";
+            eyeDropper.style.top = e.clientY - 80 + "px";
+        }
+    }
     if (e.button === mouseButton.wheel) {
         startX = (e.clientX / scale);
         startY = (e.clientY / scale);
 
         isPanning = true;
     }
-    if(e.button === mouseButton.backward && scale !== minScale) {
+    if (e.button === mouseButton.backward && scale !== minScale) {
         scaleText.textContent = `${minScale}`
 
         const zoomValues = interpolate({
@@ -64,7 +81,7 @@ canvasWrapper.addEventListener("mousedown", e => {
 
         requestAnimationFrame(t => zoom(zoomValues))
     }
-    if(e.button === mouseButton.forward && scale !== maxScale) {
+    if (e.button === mouseButton.forward && scale !== maxScale) {
         scaleText.textContent = `${maxScale}`
 
         const zoomValues = interpolate({
@@ -80,10 +97,28 @@ canvasWrapper.addEventListener("mousedown", e => {
     }
 })
 
-let prevPointOnCanvas = pointOnCanvas = pointColor = null;
+canvas.addEventListener("mousemove", e => {
+    if (isColorPicking) {
+        eyeDropper.style.left = e.clientX - 26 + "px";
+        eyeDropper.style.top = e.clientY - 80 + "px";
+
+        const pointOnCanvas = getPointOnCanvas(e);
+
+        const colorPoint = ctx.getImageData(pointOnCanvas.x, pointOnCanvas.y, 1, 1)
+
+        drawColor = {
+            r: colorPoint.data[0],
+            g: colorPoint.data[1],
+            b: colorPoint.data[2],
+            a: colorPoint.data[3]
+        }
+
+        eyeDropperColor.style.backgroundColor = `rgba(${drawColor.r}, ${drawColor.g}, ${drawColor.b}, ${drawColor.a})`;
+    }
+})
 
 canvas.addEventListener("mousemove", e => {
-    if (isPanning || isZooming) return;
+    if (isPanning || isZooming || isColorPicking) return;
 
     prevPointOnCanvas = prevPointOnCanvas === null ? getPointOnCanvas(e) : pointOnCanvas;
     pointOnCanvas = getPointOnCanvas(e);
@@ -111,7 +146,7 @@ canvas.addEventListener("mousemove", e => {
             a: color.data[3]
         }
 
-        ctx.fillStyle = drawColor
+        ctx.fillStyle = `rgba(${drawColor.r}, ${drawColor.g}, ${drawColor.b}, ${drawColor.a})`
         ctx.fillRect(pointOnCanvas.x, pointOnCanvas.y, 1, 1);
 
     }
@@ -192,7 +227,7 @@ window.addEventListener("mouseup", e => {
 canvas.addEventListener("click", e => {
     const { x, y } = getPointOnCanvas(e);
 
-    ctx.fillStyle = drawColor;
+    ctx.fillStyle = `rgba(${drawColor.r}, ${drawColor.g}, ${drawColor.b}, ${drawColor.a})`;
     ctx.fillRect(x, y, 1, 1);
 
     const color = ctx.getImageData(pointOnCanvas.x, pointOnCanvas.y, 1, 1)

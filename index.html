@@ -123,7 +123,7 @@
             border-radius: 40%;
             transform: translateX(-50%) translateY(-50%);
             position: absolute;
-            z-index: 2;
+            z-index: 3;
         }
 
         #fade {
@@ -229,6 +229,65 @@
             animation: circle3 30s linear infinite;
         }
 
+        #colors {
+            position: absolute;
+            margin: 0px;
+            padding: 0px;
+            top: 20px;
+            right: 20px;
+            list-style: none;
+            /* border: 1px solid black; */
+            border-radius: 10px;
+            padding: 10px;
+            padding-top: 0px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+
+        #colors li {
+            /* padding: 10px; */
+            /* border: 1px solid rgba(0, 0, 0, 0.342); */
+            /* border-radius: 10px; */
+            margin-top: 20px;
+        }
+
+        #colors li div {
+            padding: 5px;
+            width: 30px;
+            height: 30px;
+            border-radius: 30%;
+            /* background-color: red; */
+        }
+
+        #eyeDropper {
+            position: absolute;
+            width: fit-content;
+            height: fit-content;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            display: none;
+            /* border-bottom-right-radius: 50%; */
+            /* border-bottom-left-radius: 50%; */
+        }
+
+        #color {
+            /* padding: 5px; */
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.4);
+            border-radius: 7px;
+            /* border-bottom-right-radius: 70%; */
+            /* border-bottom-left-radius: 70%; */
+            background-color: white;
+        }
+
         @keyframes circle3 {
             0% {
                 transform: rotate(120deg)translate(-61px)rotate(120deg);
@@ -287,16 +346,28 @@
         <!-- <canvas id="pixelHoverCanvas"></canvas> -->
         <!-- <div id="pointer"></div> -->
         <div id="innerPointer"></div>
+        <div id="eyeDropper">
+            <div id="color"></div>
+        </div>
         <!-- <div id="dot"></div> -->
         <!-- <div id="fade"></div> -->
     </div>
-    <div id="glassmorphism"></div>
+    <!-- <div id="glassmorphism"></div> -->
     <ul id="info">
         <li>zoom: <div id="scale">1</div>
         </li>
         <li>fps: <div id="fps">60</div>
         </li>
     </ul>
+
+    <!-- <ul id="colors">
+        <li><div id="black" style="background-color: red;"></div>
+        </li>
+        <li><div id="grey" style="background-color: orange;"></div>
+        </li>
+        <li><div id="white" style="background-color: gold;"></div>
+        </li>
+    </ul> -->
 
     <audio id="audio" src="res/deepslate.mp3"></audio>
     <!-- <script src="js/canvas.js"></script> -->
