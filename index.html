@@ -129,8 +129,12 @@
         #fade {
             position: absolute;
             pointer-events: none;
+            border-radius: 10px;
             inset: 0;
+            /* z-index: 66; */
             background: linear-gradient(90deg, #ffffff, transparent 15%, transparent 85%, #ffffff);
+            /* background: linear-gradient(90deg, #ffffff00, transparent 15%, transparent 55%, #ffffff); */
+            /* background: linear-gradient(to left,rgba(255, 255, 255, 1), transparent 40%); */
         }
 
         #glassmorphism {
@@ -262,30 +266,51 @@
 
         #eyeDropper {
             position: absolute;
-            width: fit-content;
+            /* width: fit-content; */
+            width: 190px;
+            overflow: hidden;
+            /* height: 30px; */
             height: fit-content;
             padding: 10px;
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px);
             z-index: 1;
             display: flex;
-            justify-content: center;
+            justify-content: start;
             align-items: center;
             border-radius: 10px;
             display: none;
+            gap: 10px;
+            /* background: linear-gradient(90deg, #ffffff, transparent 15%, transparent 55%, #ffffff00); */
             /* border-bottom-right-radius: 50%; */
             /* border-bottom-left-radius: 50%; */
         }
 
+        #colorWrapper {
+            position: absolute;
+            width: fit-content;
+            height: fit-content;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            gap: 10px;
+
+        }
+
         #color {
             /* padding: 5px; */
-            width: 30px;
+            position: relative;
+            /* top: 0; */
+            /* position: fixed; */
+            min-width: 30px;
             height: 30px;
-            border: 1px solid rgba(0, 0, 0, 0.4);
+            /* max-ma: ; */
+            /* border: 1px solid rgba(0, 0, 0, 0.4); */
             border-radius: 7px;
             /* border-bottom-right-radius: 70%; */
             /* border-bottom-left-radius: 70%; */
             background-color: white;
+            /* box-sizing: border-box; */
         }
 
         @keyframes circle3 {
@@ -347,10 +372,16 @@
         <!-- <div id="pointer"></div> -->
         <div id="innerPointer"></div>
         <div id="eyeDropper">
-            <div id="color"></div>
+            <!-- <div id="colorWrapper"> -->
+                <div id="color" class="color"></div>
+                <div id="color"></div>
+                <div id="color" style="background-color: gold;"></div>
+                <div id="color" style="background-color: chocolate;"></div>
+                <div id="color" style="background-color: darkred;"></div>
+            <!-- </div> -->
         </div>
-        <!-- <div id="dot"></div> -->
         <!-- <div id="fade"></div> -->
+        <!-- <div id="dot"></div> -->
     </div>
     <!-- <div id="glassmorphism"></div> -->
     <ul id="info">

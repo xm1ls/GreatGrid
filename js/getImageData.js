@@ -8,6 +8,7 @@ const fpsText = document.getElementById("fps");
 const innerPointer = document.getElementById("innerPointer");
 const eyeDropper = document.getElementById("eyeDropper");
 const eyeDropperColor = document.getElementById("color");
+const colorWrapper = document.getElementById("colorWrapper");
 
 const audio = document.getElementById("audio");
 
@@ -19,13 +20,19 @@ img.src = "res/inventory_transparent.png"
 let startX, startY,
     panningX = panningY = 0,
     isPanning = isZooming = isColorPicking = false,
+    prevPointOnCanvas = pointOnCanvas = pointColor = null,
     centerBorderX, centerBorderY,
     timer, prevTimeStamp, fps,
     scrollDelay = 100, zoomTime = .25,
     scale = prevScale = 1,
     minScale = 1, maxScale = 64,
-    drawColor = "black",
-    prevPointOnCanvas = pointOnCanvas = pointColor = null;
+    colorIndex = 0,
+    drawColor = {
+        r: 0,
+        g: 0,
+        b: 0,
+        a: 255,
+    };
 
 const mouseButton = {
     'left': 0,
@@ -50,14 +57,28 @@ img.onload = () => {
 canvasWrapper.addEventListener("mousedown", e => {
     if (e.button === mouseButton.right) {
         if (isColorPicking) {
+            console.log(colorIndex)
+            if (colorIndex === 0) {
+                const pointOnCanvas = getPointOnCanvas(e);
+                const colorPoint = ctx.getImageData(pointOnCanvas.x, pointOnCanvas.y, 1, 1)
+
+                drawColor = {
+                    r: colorPoint.data[0],
+                    g: colorPoint.data[1],
+                    b: colorPoint.data[2],
+                    a: colorPoint.data[3]
+                }
+            }
+
             isColorPicking = false;
 
+            // colorIndex = 0;
             eyeDropper.style.display = 'none';
         } else {
             isColorPicking = true;
 
             eyeDropper.style.display = 'flex';
-            eyeDropper.style.left = e.clientX - 26 + "px";
+            eyeDropper.style.left = e.clientX - 26 - (colorIndex * 40) + "px";
             eyeDropper.style.top = e.clientY - 80 + "px";
         }
     }
@@ -71,7 +92,7 @@ canvasWrapper.addEventListener("mousedown", e => {
         scaleText.textContent = `${minScale}`
 
         const zoomValues = interpolate({
-            startValue: scale,
+            startValue: prevScale,
             endValue: minScale,
             firstPoint: .1,
             secondPoint: 1,
@@ -79,13 +100,15 @@ canvasWrapper.addEventListener("mousedown", e => {
             time: .4
         })
 
+        scale = minScale;
+
         requestAnimationFrame(t => zoom(zoomValues))
     }
     if (e.button === mouseButton.forward && scale !== maxScale) {
         scaleText.textContent = `${maxScale}`
 
         const zoomValues = interpolate({
-            startValue: scale,
+            startValue: prevScale,
             endValue: maxScale,
             firstPoint: .1,
             secondPoint: 1,
@@ -93,32 +116,95 @@ canvasWrapper.addEventListener("mousedown", e => {
             time: .4
         })
 
+        scale = maxScale;
+
         requestAnimationFrame(t => zoom(zoomValues))
     }
 })
 
 canvas.addEventListener("mousemove", e => {
     if (isColorPicking) {
-        eyeDropper.style.left = e.clientX - 26 + "px";
+        eyeDropper.style.left = e.clientX - 26 - (colorIndex * 40) + "px";
         eyeDropper.style.top = e.clientY - 80 + "px";
 
+        // if(colorIndex === 0) {
         const pointOnCanvas = getPointOnCanvas(e);
-
         const colorPoint = ctx.getImageData(pointOnCanvas.x, pointOnCanvas.y, 1, 1)
 
-        drawColor = {
-            r: colorPoint.data[0],
-            g: colorPoint.data[1],
-            b: colorPoint.data[2],
-            a: colorPoint.data[3]
-        }
+        // drawColor = {
+        //     r: colorPoint.data[0],
+        //     g: colorPoint.data[1],
+        //     b: colorPoint.data[2],
+        //     a: colorPoint.data[3]
+        // }
 
-        eyeDropperColor.style.backgroundColor = `rgba(${drawColor.r}, ${drawColor.g}, ${drawColor.b}, ${drawColor.a})`;
+        eyeDropperColor.style.backgroundColor = `rgba(
+                ${colorPoint.data[0]}, 
+                ${colorPoint.data[1]}, 
+                ${colorPoint.data[2]}, 
+                ${colorPoint.data[3]}
+            )`;
+        // }    
+        // } else {
+        // const colorPoint = window.getComputedStyle(eyeDropper.children[colorIndex].backgroundColor).substring(4, 5).split(',').map(value => parseInt(value.trim())
+        // );            
+
+        // drawColor = {
+        //     r: colorPoint[0],
+        //     g: colorPoint[1],
+        //     b: colorPoint[2],
+        //     a: 255
+        // }
+        // }
+
     }
 })
 
+canvas.addEventListener("wheel", e => {
+    if (!isColorPicking) return;
+
+    const prevColorIndex = colorIndex;
+
+    colorIndex += e.deltaY * .01
+    colorIndex = Math.ceil(Math.min(Math.max(0, colorIndex), 4));
+
+    // console.log(colorIndex)
+    // console.log((getComputedStyle(eyeDropper.children[colorIndex]).backgroundColor))
+    // console.log(parseRGB((getComputedStyle(eyeDropper.children[colorIndex]).backgroundColor)))
+
+    if (prevColorIndex === colorIndex) return;
+
+    const rgbaColor = parseRGB((getComputedStyle(eyeDropper.children[colorIndex]).backgroundColor))
+
+    if (prevColorIndex < colorIndex) {
+        eyeDropper.style.left = parseFloat(eyeDropper.style.left) - 40 + "px";
+    } else {
+        eyeDropper.style.left = parseFloat(eyeDropper.style.left) + 40 + "px";
+    }
+
+    drawColor = {
+        r: rgbaColor.r,
+        g: rgbaColor.g,
+        b: rgbaColor.b,
+        a: rgbaColor.a,
+    }
+})
+
+function parseRGB(rgbString) {
+    // Remove "rgb(" and ")" from the string and split the values
+    const rgbValues = rgbString.substring(4, rgbString.length - 1).split(',').map(value => parseInt(value.trim()));
+
+    // Return an object with RGB components
+    return {
+        r: rgbValues[0],
+        g: rgbValues[1],
+        b: rgbValues[2],
+        a: 255
+    };
+}
+
 canvas.addEventListener("mousemove", e => {
-    if (isPanning || isZooming || isColorPicking) return;
+    if (isPanning || isZooming || (isColorPicking && colorIndex === 0)) return;
 
     prevPointOnCanvas = prevPointOnCanvas === null ? getPointOnCanvas(e) : pointOnCanvas;
     pointOnCanvas = getPointOnCanvas(e);
@@ -194,6 +280,8 @@ window.addEventListener("mousemove", e => {
 })
 
 canvasWrapper.addEventListener("wheel", e => {
+    if (isColorPicking) return;
+
     clearTimeout(timer)
 
     isZooming = true;
@@ -204,7 +292,9 @@ canvasWrapper.addEventListener("wheel", e => {
     scaleText.textContent = `${scale}`
 
     timer = setTimeout(() => {
-        if (prevScale == scale) return;
+        if (prevScale == scale) {
+            return;
+        }
 
         const zoomValues = interpolate({
             startValue: prevScale,
@@ -281,17 +371,18 @@ function interpolate({ startValue, endValue, firstPoint = 0, secondPoint = 1, fp
 
 function zoom(zoomValues, index = 0) {
     if (index >= zoomValues.length) {
-        isZooming = false;
+        isZooming = false
+
         return;
     }
 
-    prevScale = scale = zoomValues[index]
-
     canvas.style.transform = `
-        scale(${scale})
+        scale(${zoomValues[index]})
         translateX(${panningX}px) 
         translateY(${panningY}px)
     `
+
+    prevScale = zoomValues[index]
 
     requestAnimationFrame(t => zoom(zoomValues, ++index))
 }
