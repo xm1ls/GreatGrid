@@ -7,6 +7,12 @@
     <title>Document</title>
 
     <style>
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+        }
+
         html,
         body {
             cursor: none;
@@ -265,6 +271,7 @@
         }
 
         #eyeDropper {
+            pointer-events: none;
             position: absolute;
             /* width: fit-content; */
             width: 190px;
@@ -342,6 +349,154 @@
                 transform: rotate(600deg)translate(-61px)rotate(-600deg);
             }
         }
+
+        .box_container {
+            pointer-events: none;
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            bottom: 50px;
+            right: 50px;
+            /* border: 1px solid red; */
+            /* left: 0; */
+            z-index: 2;
+            /* box-sizing: border-box; */
+            
+        }
+        
+        .box {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            margin: 0;
+            padding: 0;
+            perspective: none;
+            transform-style: preserve-3d;
+            transform: rotateX(-45deg) rotateY(45deg);
+        }
+        
+        .box_side {
+            /* opacity: 0.5; */
+            /* outline: 1px solid black; */
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            image-rendering: pixelated;
+            background-size: cover;
+        }
+
+        #front {
+            background-color: black;
+            background-image: url(res/crafting_table_front.png);
+            transform: translate3d(0, 0, 50px);
+        }
+
+        #left {
+            right: 50%;
+            background-color: black;
+
+            background-image: url(res/crafting_table_side.png);
+            transform: rotateY(-90deg);
+        }
+        #right {
+            left: 50%;
+            background-color: white;
+
+            background-image: url(res/crafting_table_side.png);
+            transform: rotateY(90deg);
+        }
+        #top {
+            bottom: 50%;
+            background-color: black;
+
+            background-image: url(res/crafting_table_top.png);
+            transform: rotateX(90deg);
+        }
+        #bottom {
+            top: 50%;
+            background-color: white;
+
+            background-image: url(res/oak_planks.png);
+            transform: rotateX(-90deg);
+        }
+        #back {
+            background-color: white;
+
+            background-image: url(res/crafting_table_front.png);
+            transform: translate3d(0, 0, -50px);
+        }
+
+        #block__container {
+            position: absolute;
+            z-index: 2;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+        }
+
+        #destroy {
+            position: absolute;
+            z-index: 1;
+            mix-blend-mode: multiply;
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            background-size: cover;
+            background-image: none;
+            
+        }
+
+        #destroy:active {
+            animation: block_destroy 3s step-start normal;
+        }
+        
+        #block {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            background-size: cover;
+            background-image: url(res/oak_log.png);
+        }
+
+        @keyframes block_destroy {
+            0% {
+                background-image: none;
+            }
+            10% {
+                background-image: url(res/destroy_stage_0.png);
+            }
+            20% {
+                background-image: url(res/destroy_stage_1.png);
+            }
+            30% {
+                background-image: url(res/destroy_stage_2.png);
+            }
+            40% {
+                background-image: url(res/destroy_stage_3.png);
+            }
+            50% {
+                background-image: url(res/destroy_stage_4.png);
+            }
+            60% {
+                background-image: url(res/destroy_stage_5.png);
+            }
+            70% {
+                background-image: url(res/destroy_stage_6.png);
+            }
+            80% {
+                background-image: url(res/destroy_stage_7.png);
+            }
+            90% {
+                background-image: url(res/destroy_stage_8.png);
+            }
+            100% {
+                background-image: url(res/destroy_stage_9.png);
+            }
+        }
     </style>
 
 </head>
@@ -390,6 +545,22 @@
         <li>fps: <div id="fps">60</div>
         </li>
     </ul>
+
+    <div class="box_container">
+        <div class="box">
+            <div class="box_side" id="front"></div>
+            <div class="box_side" id="back"></div>
+            <div class="box_side" id="left"></div>
+            <div class="box_side" id="right"></div>
+            <div class="box_side" id="top"></div>
+            <div class="box_side" id="bottom"></div>
+        </div>
+    </div>
+
+    <div id="block__container">
+        <div id="destroy"></div>
+        <div id="block"></div>
+    </div>
 
     <!-- <ul id="colors">
         <li><div id="black" style="background-color: red;"></div>

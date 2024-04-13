@@ -79,7 +79,7 @@ canvasWrapper.addEventListener("mousedown", e => {
 
             eyeDropper.style.display = 'flex';
             eyeDropper.style.left = e.clientX - 26 - (colorIndex * 40) + "px";
-            eyeDropper.style.top = e.clientY - 80 + "px";
+            eyeDropper.style.top = e.clientY - 100 + "px";
         }
     }
     if (e.button === mouseButton.wheel) {
@@ -125,7 +125,7 @@ canvasWrapper.addEventListener("mousedown", e => {
 canvas.addEventListener("mousemove", e => {
     if (isColorPicking) {
         eyeDropper.style.left = e.clientX - 26 - (colorIndex * 40) + "px";
-        eyeDropper.style.top = e.clientY - 80 + "px";
+        eyeDropper.style.top = e.clientY - 100 + "px";
 
         // if(colorIndex === 0) {
         const pointOnCanvas = getPointOnCanvas(e);
