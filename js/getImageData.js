@@ -10,16 +10,20 @@ const eyeDropper = document.getElementById("eyeDropper");
 const eyeDropperColor = document.getElementById("color");
 const colorWrapper = document.getElementById("colorWrapper");
 
+const lever = document.getElementById("lever");
+
 const audio = document.getElementById("audio");
 
 audio.volume = .1
 
 const img = new Image();
 img.src = "res/inventory_transparent.png"
+// img.src = "res/BlockCSS (2).webp"
+// img.src = "res/SchematicSprite.webp"
 
 let startX, startY,
     panningX = panningY = 0,
-    isPanning = isZooming = isColorPicking = false,
+    isPanning = isZooming = isColorPicking = isLeverOn = false,
     prevPointOnCanvas = pointOnCanvas = pointColor = null,
     centerBorderX, centerBorderY,
     timer, prevTimeStamp, fps,
@@ -53,6 +57,23 @@ img.onload = () => {
 
     ctx.drawImage(img, 0, 0);
 }
+
+lever.addEventListener("click", e => {
+    let clickSound = new Audio();
+    // clickSound.volume = .5;
+    
+    if(isLeverOn) {
+        isLeverOn = false
+        clickSound.src = "res/lever_off.mp3"
+        lever.style.backgroundImage = "url(res/lever_off_r.png)"
+    } else {
+        isLeverOn = true
+        clickSound.src = "res/lever_on.mp3"
+        lever.style.backgroundImage = "url(res/lever_on_r.png)"
+    }
+
+    clickSound.play()
+})
 
 canvasWrapper.addEventListener("mousedown", e => {
     if (e.button === mouseButton.right) {

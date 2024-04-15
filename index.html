@@ -372,7 +372,7 @@
             padding: 0;
             perspective: none;
             transform-style: preserve-3d;
-            transform: rotateX(-45deg) rotateY(45deg);
+            transform: rotateX(-30deg) rotateY(45deg);
         }
         
         .box_side {
@@ -430,19 +430,34 @@
 
         #block__container {
             position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             z-index: 2;
-            top: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: fit-content;
+            height: fit-content;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            /* outline: 1px solid rgba(0, 0, 0, 0.3); */
+            border-radius: 10px;
+            /* padding: 20px 30px; */
+            padding: 20px 0px 20px 40px;
+            /* padding: 10px 0px 10px 36px; */
+            /* transform: translateX(-50%); */
+            margin: 0;
+            /* perspective: none; */
+            /* transform-style: preserve-3d; */
         }
 
         #destroy {
             position: absolute;
             z-index: 1;
             mix-blend-mode: multiply;
-            width: 100%;
-            height: 100%;
+            width: 65px;
+            height: 65px;
             image-rendering: pixelated;
             background-size: cover;
             background-image: none;
@@ -450,16 +465,36 @@
         }
 
         #destroy:active {
-            animation: block_destroy 3s step-start normal;
+            animation: block_destroy 3s steps(1) normal;
         }
         
         #block {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            min-width: 65px;
+            min-height: 65px;
             image-rendering: pixelated;
             background-size: cover;
-            background-image: url(res/oak_log.png);
+            background-image: url(res/lever_on_r.png);
+        }
+
+        #dropper {
+            /* display: flex; */
+            min-width: 70px;
+            min-height: 70px;
+            image-rendering: pixelated;
+            background-size: cover;
+            background-image: url(res/dropper_front.png);
+        }
+
+        #lever {
+            /* position: absolute; */
+            /* display: flex; */
+            /* left: calc(50% + 25px); */
+            min-width: 70px;
+            min-height: 70px;
+            image-rendering: pixelated;
+            background-size: cover;
+            background-image: url(res/lever_off_r.png);
         }
 
         @keyframes block_destroy {
@@ -546,7 +581,7 @@
         </li>
     </ul>
 
-    <div class="box_container">
+    <!-- <div class="box_container">
         <div class="box">
             <div class="box_side" id="front"></div>
             <div class="box_side" id="back"></div>
@@ -555,11 +590,13 @@
             <div class="box_side" id="top"></div>
             <div class="box_side" id="bottom"></div>
         </div>
-    </div>
+    </div> -->
 
     <div id="block__container">
-        <div id="destroy"></div>
-        <div id="block"></div>
+        <!-- <div id="destroy"></div> -->
+        <!-- <div id="block"></div> -->
+        <div id="dropper"></div>
+        <div id="lever"></div>
     </div>
 
     <!-- <ul id="colors">
