@@ -441,8 +441,8 @@
             align-items: center;
             z-index: 2;
             top: 60px;
+            right: 10%;
             /* right: 20px; */
-            right: 20px;
             /* transform: translateX(-50%); */
             width: fit-content;
             height: fit-content;
@@ -524,7 +524,7 @@
             transform: translateX(-50%);
             display: flex;
             gap: 6px;
-            padding: 10px 13px;
+            /* padding: 10px 13px; */
             /* border-radius: 7px;
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px);
@@ -540,10 +540,11 @@
             /* width: 50px; */
             /* height: 50px; */
             border-radius: 7px;
+            /* border-radius: 7px 7px 0px 0px; */
             image-rendering: pixelated;
             /* background: rgba(255, 255, 255, 0.3); */
             /* backdrop-filter: blur(10px); */
-            border-radius: 7px;
+            /* border-radius: 7px; */
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px);
             outline: 1px solid rgba(0, 0, 0, 0.3);
@@ -553,12 +554,159 @@
             align-items: center;
         }
 
+        #slot:hover {
+            outline-width: 2px;
+        }
+
+        #active_slot {
+            width: fit-content;
+            height: fit-content;
+            min-width: 30px;
+            min-height: 30px;
+            /* width: 50px; */
+            /* height: 50px; */
+            border-radius: 7px;
+            /* border-radius: 7px 7px 0px 0px; */
+            image-rendering: pixelated;
+            /* background: rgba(255, 255, 255, 0.3); */
+            /* backdrop-filter: blur(10px); */
+            /* border-radius: 7px; */
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            outline: 1px solid rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            outline-width: 2px;
+            outline-color: black;
+        }
+
         #item {
             width: 30px;
             height: 30px;
             image-rendering: pixelated;
             background-size: cover;
-            background-image: url(res/dyes/green_dye.png);
+            background-image: url(res/bone.png);
+        }
+
+        #ornament {
+            position: absolute;
+            z-index: 2;
+            width: 100px;
+            height: 100px;
+            bottom: 20px;
+            left: 20px;
+            image-rendering: pixelated;
+            background-size: cover;
+            background-image: url(res/ornament.png);
+        }
+
+        #crafting_table {
+            /* position: absolute; */
+            bottom: 0;
+            /* margin-left: 10px; */
+            width: 50px;
+            height: 50px;
+            image-rendering: pixelated;
+            background-size: cover;
+            background-image: url(res/crafting_table_top.png);
+        }
+
+        #furnace {
+            /* position: absolute; */
+            bottom: 0;
+            /* margin-right: 10px; */
+            width: 50px;
+            height: 50px;
+            image-rendering: pixelated;
+            background-size: cover;
+            background-image: url(res/furnace_front.png);
+        }
+
+        #tools {
+            position: absolute;
+            z-index: 2;
+            top: 40%;
+            transform: translateY(-50%);
+            right: 20px;
+            width: 50px;
+            height: fit-content;
+            /* padding: 10px; */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            /* background: rgba(255, 255, 255, 0.3); */
+            /* backdrop-filter: blur(10px); */
+            /* outline: 1px solid rgba(0, 0, 0, 0.3); */
+        }
+
+        #craft {
+            width: 30px;
+            height: 30px;
+            image-rendering: pixelated;
+            background-size: cover;
+            background-image: url(res/pink_petals.png);
+            /* background: rgba(255, 255, 255, 0.3); */
+            /* backdrop-filter: blur(10px); */
+            /* padding: 10px; */
+            /* outline: 1px solid rgba(0, 0, 0, 0.3); */
+            /* border-radius: 7px; */
+        }
+
+        #melt {
+            width: 30px;
+            height: 30px;
+            image-rendering: pixelated;
+            background-size: cover;
+            background-image: url(res/lava_bucket.png);
+            /* background: rgba(255, 255, 255, 0.3); */
+            /* backdrop-filter: blur(10px); */
+            /* outline: 1px solid rgba(0, 0, 0, 0.3); */
+            /* border-radius: 7px; */
+        }
+
+        #trade {
+            width: 30px;
+            height: 30px;
+            image-rendering: pixelated;
+            background-image: url(res/emerald.png);
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* background: rgba(255, 255, 255, 0.3); */
+            /* backdrop-filter: blur(10px); */
+            /* outline: 1px solid rgba(0, 0, 0, 0.3); */
+            /* border-radius: 7px; */
+        }
+
+        #gui_wrapper {
+            position: absolute;
+            top: 0;
+            left: -450px;
+            width: 400px;
+            height: 200px;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            outline: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 7px;
+        }
+
+        #craft_gui {
+            /* position: absolute; */
+            /* left: -330px; */
+            width: 200px;
+            height: 200px;
+            /* padding: 10px; */
+            outline: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 7px;
         }
 
         @keyframes swing {
@@ -665,6 +813,8 @@
         </li>
     </ul>
 
+    <!-- <div id="ornament"></div> -->
+
     <!-- <div class="box_container">
         <div class="box">
             <div class="box_side" id="front"></div>
@@ -686,17 +836,36 @@
     </div>
 
     <div id="inventory">
+        <!-- <div id="furnace"></div> -->
         <div id="slot">
+        </div>
+        <div id="slot">
+        </div>
+        <div id="slot"></div>
+        <div id="slot"></div>
+        <div id="active_slot">
             <div id="item"></div>
         </div>
         <div id="slot"></div>
         <div id="slot"></div>
         <div id="slot"></div>
         <div id="slot"></div>
-        <div id="slot"></div>
-        <div id="slot"></div>
-        <div id="slot"></div>
-        <div id="slot"></div>
+        <!-- <div id="crafting_table"></div> -->
+    </div>
+
+    <div id="tools">
+        <div id="slot">
+            <div id="craft"></div>
+        </div>
+        <div id="slot">
+            <div id="melt"></div>
+        </div>
+        <div id="slot">
+            <div id="trade"></div>
+        </div>
+        <div id="gui_wrapper">
+            <!-- <div id="craft_gui"></div> -->
+        </div>
     </div>
 
     <!-- <ul id="colors">

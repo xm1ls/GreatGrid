@@ -60,7 +60,7 @@ img.onload = () => {
 
 lever.addEventListener("click", e => {
     let clickSound = new Audio();
-    // clickSound.volume = .5;
+    clickSound.volume = .3;
     
     if(isLeverOn) {
         isLeverOn = false
