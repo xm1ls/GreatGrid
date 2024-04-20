@@ -163,14 +163,15 @@
         }
 
         #info {
-            /* display: flex; */
-            /* flex-direction: column; */
-            /* justify-content: center; */
-            /* align-items: center; */
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: start;
             position: absolute;
             z-index: 1;
             top: 20px;
-            left: 20px;
+            right: 20px;
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px);
             /* border: 1px solid rgba(0, 0, 0, 0.3); */
@@ -441,7 +442,7 @@
             align-items: center;
             z-index: 2;
             top: 60px;
-            right: 10%;
+            left: 10%;
             /* right: 20px; */
             /* transform: translateX(-50%); */
             width: fit-content;
@@ -688,9 +689,9 @@
             top: 0;
             left: -450px;
             width: 400px;
-            height: 200px;
+            height: 250px;
             display: flex;
-            justify-content: start;
+            justify-content: center;
             align-items: center;
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px);
@@ -700,13 +701,46 @@
         }
 
         #craft_gui {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 35px;
+            /* flex-wrap: wrap; */
+            /* gap: 5px; */
             /* position: absolute; */
             /* left: -330px; */
-            width: 200px;
-            height: 200px;
+            /* width: 160px; */
+            /* height: 160px; */
             /* padding: 10px; */
-            outline: 1px solid rgba(0, 0, 0, 0.3);
-            border-radius: 7px;
+            /* outline: 1px solid rgba(0, 0, 0, 0.3); */
+            /* border-radius: 7px; */
+        }
+
+        #craft_slots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            width: 160px;
+            height: 160px;
+        }
+
+        #craft_slots > #slot,
+        #craft_gui > #slot {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: none;
+        }
+
+        #craft_arrow {
+            display: flex;
+            gap: 8px;
+        }
+
+        #craft_arrow_item {
+            width: 10px;
+            height: 10px;
+            /* outline: 1px solid rgba(0, 0, 0, 0.3); */
+            background-color: rgba(0, 0, 0, 0.25);
+            border-radius: 50%;
         }
 
         @keyframes swing {
@@ -854,7 +888,7 @@
     </div>
 
     <div id="tools">
-        <div id="slot">
+        <div id="active_slot">
             <div id="craft"></div>
         </div>
         <div id="slot">
@@ -864,7 +898,29 @@
             <div id="trade"></div>
         </div>
         <div id="gui_wrapper">
-            <!-- <div id="craft_gui"></div> -->
+            <div id="craft_gui">
+                <div id="craft_slots">
+                    <div id="slot"></div>
+                    <div id="slot"></div>
+                    <div id="slot"></div>
+                    <div id="slot"></div>
+                    <div id="slot">
+                        <div id="item" style="background-image: url(res/red_tulip.png);"></div>
+                    </div>
+                    <div id="slot"></div>
+                    <div id="slot"></div>
+                    <div id="slot"></div>
+                    <div id="slot"></div>
+                </div>
+                <div id="craft_arrow">
+                    <div id="craft_arrow_item"></div>
+                    <!-- <div id="craft_arrow_item"></div> -->
+                    <!-- <div id="craft_arrow_item"></div> -->
+                </div>
+                <div id="slot">
+                    <div id="item" style="background-image: url(res/dyes/red_dye.png);"></div>
+                </div>
+            </div>
         </div>
     </div>
 
