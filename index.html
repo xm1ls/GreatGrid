@@ -595,6 +595,14 @@
             outline-width: 3px;
         }
 
+        .slot__item {
+            width: 30px;
+            height: 30px;
+            image-rendering: pixelated;
+            background-size: cover;
+            background-image: url(res/bone.png);
+        }
+
         #slot:hover {
             outline-width: 2px;
         }
@@ -929,25 +937,39 @@
 
     <div class="hotbar" id="hotbar">
         <div class="hotbar__slot hotbar__slot--active">
-            <div id="item" style="background-image: url(res/dyes/gray_dye.png);"></div>
         </div>
-        <div class="hotbar__slot"></div>
-        <div class="hotbar__slot"></div>
-        <div class="hotbar__slot"></div>
-        <div class="hotbar__slot"></div>
-        <div class="hotbar__slot"></div>
-        <div class="hotbar__slot"></div>
-        <div class="hotbar__slot"></div>
-        <div class="hotbar__slot"></div>
+        <div class="hotbar__slot">
+            <div class="slot__item" id="slot_item" data-dye="pink" style="background-image: url(res/dyes/pink_dye.png);"></div>
+        </div>
+        <div class="hotbar__slot">
+        </div>
+        <div class="hotbar__slot">
+            <div class="slot__item" id="slot_item" data-dye="green" style="background-image: url(res/dyes/green_dye.png);"></div>
+        </div>
+        <div class="hotbar__slot">
+            
+        </div>
+        <div class="hotbar__slot">
+            
+        </div>
+        <div class="hotbar__slot">
+            <div class="slot__item" id="slot_item" data-dye="black" style="background-image: url(res/dyes/black_dye.png);"></div>
+        </div>
+        <div class="hotbar__slot">
+            
+        </div>
+        <div class="hotbar__slot">
+            <div class="slot__item" id="slot_item" data-dye="red" style="background-image: url(res/dyes/red_dye.png);"></div>
+        </div>
     </div>
 
     <div id="tools">
         <div id="slot">
             <div id="craft"></div>
         </div>
-        <div id="slot">
+        <!-- <div id="slot">
             <div id="melt"></div>
-        </div>
+        </div> -->
         <div id="slot">
             <div id="trade"></div>
         </div>

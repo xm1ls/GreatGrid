@@ -30,13 +30,20 @@ let startX, startY,
     scrollDelay = 100, zoomTime = .25,
     scale = prevScale = 1,
     minScale = 1, maxScale = 64,
-    colorIndex = 0,
-    drawColor = {
-        r: 0,
-        g: 0,
-        b: 0,
-        a: 255,
-    };
+    colorIndex = 0
+    // drawColor = {
+    //     r: 0,
+    //     g: 0,
+    //     b: 0,
+    //     a: 255,
+    // };
+
+var drawColor = {
+    r: 0,
+    g: 0,
+    b: 0,
+    a: 255,
+};
 
 const mouseButton = {
     'left': 0,
