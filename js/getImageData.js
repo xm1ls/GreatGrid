@@ -5,6 +5,8 @@ const ctx = canvas.getContext("2d", { willReadFrequently: true, alpha: false });
 const scaleText = document.getElementById("scale");
 const fpsText = document.getElementById("fps");
 
+const canvasPointer = document.getElementById("pointer");
+
 const innerPointer = document.getElementById("innerPointer");
 const eyeDropper = document.getElementById("eyeDropper");
 const eyeDropperColor = document.getElementById("color");
@@ -31,12 +33,6 @@ let startX, startY,
     scale = prevScale = 1,
     minScale = 1, maxScale = 64,
     colorIndex = 0
-    // drawColor = {
-    //     r: 0,
-    //     g: 0,
-    //     b: 0,
-    //     a: 255,
-    // };
 
 var drawColor = {
     r: 0,
@@ -68,8 +64,8 @@ img.onload = () => {
 lever.addEventListener("click", e => {
     let clickSound = new Audio();
     clickSound.volume = .3;
-    
-    if(isLeverOn) {
+
+    if (isLeverOn) {
         isLeverOn = false
         clickSound.src = "res/lever_off.mp3"
         lever.style.backgroundImage = "url(res/lever_off_r.png)"
@@ -85,7 +81,6 @@ lever.addEventListener("click", e => {
 canvasWrapper.addEventListener("mousedown", e => {
     if (e.button === mouseButton.right) {
         if (isColorPicking) {
-            console.log(colorIndex)
             if (colorIndex === 0) {
                 const pointOnCanvas = getPointOnCanvas(e);
                 const colorPoint = ctx.getImageData(pointOnCanvas.x, pointOnCanvas.y, 1, 1)
@@ -100,7 +95,6 @@ canvasWrapper.addEventListener("mousedown", e => {
 
             isColorPicking = false;
 
-            // colorIndex = 0;
             eyeDropper.style.display = 'none';
         } else {
             isColorPicking = true;
@@ -148,6 +142,22 @@ canvasWrapper.addEventListener("mousedown", e => {
 
         requestAnimationFrame(t => zoom(zoomValues))
     }
+})
+
+canvas.addEventListener("mousemove", e => {
+    canvasPointer.style.opacity = scale < 15 ? "0" : "1";
+
+    const canvasOffset = canvas.getBoundingClientRect()
+
+    let x = e.clientX;
+    let y = e.clientY;
+
+    x -= (x - canvasOffset.left) % scale
+    y -= (y - canvasOffset.top) % scale
+
+    canvasPointer.style.left = Math.round(x) + "px";
+    canvasPointer.style.top = Math.round(y) + "px";
+
 })
 
 canvas.addEventListener("mousemove", e => {
@@ -411,6 +421,9 @@ function zoom(zoomValues, index = 0) {
     `
 
     prevScale = zoomValues[index]
+
+    canvasPointer.style.width = `${zoomValues[index]}px`
+    canvasPointer.style.height = `${zoomValues[index]}px`
 
     requestAnimationFrame(t => zoom(zoomValues, ++index))
 }

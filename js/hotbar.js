@@ -1,8 +1,6 @@
 const hotbar = document.getElementById('hotbar');
 const slots = document.querySelectorAll('.hotbar__slot');
 
-let slotItems = document.querySelectorAll('.slot__item');
-
 const dyes = {
     white: {r: 249, g: 255, b: 254},
     lightGray: {r: 157, g: 157, b: 151},
@@ -22,20 +20,6 @@ const dyes = {
     pink: {r: 243, g: 139, b: 170},
 }
 
-// slotItems.forEach(item => {
-//     item.addEventListener("click", e => {
-//         // console.log(colors[item.dataset.color])
-//         if(item.dataset.dye in dyes) {
-//             drawColor = dyes[item.dataset.dye]
-//             drawColor.a = 255
-
-//             // console.log(drawColor)
-//         }
-
-//     })
-    
-// });
-
 let slotIndex = prevSlotIndex = 0;
 const slotsNumber = 9
 
@@ -50,8 +34,12 @@ hotbar.addEventListener("wheel", e => {
 
     if(slots[slotIndex].children.length > 0) {
         if(slots[slotIndex].children[0].dataset.dye in dyes) {
+            const {r, g, b} = dyes[slots[slotIndex].children[0].dataset.dye]
+
             drawColor = dyes[slots[slotIndex].children[0].dataset.dye]
             drawColor.a = 255
+
+            slots[slotIndex].style.outlineColor = `rgb(${r}, ${g}, ${b})`
         } 
     } else {
         drawColor = {
@@ -65,17 +53,19 @@ hotbar.addEventListener("wheel", e => {
 
 slots.forEach((slot, index) => {
     slot.addEventListener("click", e => {
-        // console.log(slot.children)
         slots[slotIndex].classList.remove('hotbar__slot--active')
         slots[index].classList.add('hotbar__slot--active') 
 
         slotIndex = index
 
         if(slot.children.length > 0) {
-
             if(slot.children[0].dataset.dye in dyes) {
+                const {r, g, b} = dyes[slot.children[0].dataset.dye]
+
                 drawColor = dyes[slot.children[0].dataset.dye]
                 drawColor.a = 255
+
+                slot.style.outlineColor = `rgb(${r}, ${g}, ${b})`
             }
         } else {
             drawColor = {

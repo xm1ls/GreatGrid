@@ -119,8 +119,16 @@
         #pointer {
             cursor: none;
             pointer-events: none;
-            background-color: black;
             position: absolute;
+            z-index: 1;
+            outline: 2px solid white;
+            border-radius: .2rem;
+            mix-blend-mode: difference;
+            transform: translateX(-2px) translateY(-2px);
+            padding: 2px;
+            transition-property: transform opacity;
+            transition-duration: 0.3s;
+            transition-timing-function: cubic-bezier(0.86, 0, 0.07, 1);
         }
 
         #innerPointer {
@@ -873,7 +881,7 @@
             <div id="circle3"></div>
         </div> -->
         <!-- <canvas id="pixelHoverCanvas"></canvas> -->
-        <!-- <div id="pointer"></div> -->
+        <div id="pointer"></div>
         <div id="innerPointer"></div>
         <div id="eyeDropper">
             <!-- <div id="colorWrapper"> -->
